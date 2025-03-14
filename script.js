@@ -1,6 +1,8 @@
+
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import * as THREE from 'three';
+
 
 const loader = new GLTFLoader();
 
@@ -20,7 +22,7 @@ const width = window.innerWidth, height = window.innerHeight;
 
 const camera = new THREE.PerspectiveCamera( 60, width / height, 0.01, 100 );
 camera.position.z = 1.5;
-camera.position.x = 0.4;
+camera.position.x = CHANGE;
 camera.position.y = 0.6;
 camera.lookAt(0,0,0)
 
@@ -60,3 +62,4 @@ function animate( time ) {
 	renderer.render( scene, camera );
 
 }
+
