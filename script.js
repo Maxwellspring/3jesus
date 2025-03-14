@@ -1,32 +1,35 @@
-// script.js
 import * as THREE from 'three';
 
-// Scene
+const width = window.innerWidth, height = window.innerHeight;
+
+// init
+
+const camera = new THREE.PerspectiveCamera( 60, width / height, 0.01, 100 );
+camera.position.z = 1;
+camera.position.x = 0.1;
+camera.position.y = 0.2;
+
 const scene = new THREE.Scene();
 
-// Camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5; // Move the camera back from the origin
+const geometry = new THREE.BoxGeometry( 0.1, 0.4, 0.2 );
+const material = new THREE.MeshNormalMaterial();
 
-// Renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const mesh = new THREE.Mesh( geometry, material );
+scene.add( mesh );
 
-// Geometry
-const geometry = new THREE.BoxGeometry(1, 1, 1); // Create a box
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green color
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const renderer = new THREE.WebGLRenderer( { antialias: false } );
+renderer.setSize( width, height, );
+renderer.setAnimationLoop( animate );
+document.body.appendChild( renderer.domElement );
 
-// Animation Loop
-function animate() {
-  requestAnimationFrame(animate);
+// animation
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+function animate( time ) {
 
-  renderer.render(scene, camera);
+	mesh.rotation.x = time / 1000;
+	mesh.rotation.y = time / 100;
+  mesh.rotation.z = time / 1000;
+
+	renderer.render( scene, camera );
+
 }
-
-animate();
