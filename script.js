@@ -40,6 +40,12 @@ document.addEventListener('keyup', function (event) {
 	return number
 });
 
+let input = 0
+
+document.addEventListener("keydown", function (event) {
+	input = event.key
+	return input
+});
 
 
 
