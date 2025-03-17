@@ -36,7 +36,7 @@ document.addEventListener('keyup', function (event) {
 	camera.position.z = number;
 	camera.position.x = number;
 	camera.position.y = number;
-	camera.lookAt(0, 0, 0)
+	camera.lookAt(number, number, number)
 	return number
 });
 
