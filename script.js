@@ -29,19 +29,20 @@ const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 100);
 camera.position.z = 3;
 camera.position.x = 3;
 
-document.addEventListener('keyup', function(event) {
+document.addEventListener('keyup', function (event) {
 	console.log('Key up:', event.key, 'Code:', event.code);
 	number = parseInt(event.key)
-	console.log(number) 
+	console.log(number)
 	camera.position.z = number;
-camera.position.x = number;
+	camera.position.x = number;
 	camera.position.y = number;
+	camera.lookAt(0, 0, 0)
 	return number
-  });
+});
 
 
 
-camera.lookAt(0, 0, 0)
+
 
 const scene = new THREE.Scene();
 
