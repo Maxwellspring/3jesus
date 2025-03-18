@@ -25,7 +25,7 @@ const width = window.innerWidth, height = window.innerHeight;
 
 let number = 3
 
-const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 100);
+const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 10000);
 camera.position.z = 3;
 camera.position.x = 3;
 
