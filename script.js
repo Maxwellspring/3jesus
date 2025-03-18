@@ -39,8 +39,8 @@ camera.position.z = 3;
 document.addEventListener('keydown', function (event) {
 	console.log('Key up:', event.key, 'Code:', event.code);
 	console.log(inputNumber)
+	inputNumber = Number(event.key)
 	if (inputNumber < 10 == true || inputNumber > -1 == true) {
-		inputNumber = parseInt(event.key)
 		if (isPressingCtrl == true) {
 			camera.position.y = inputNumber;
 		} else if (isPressingShift == true) {
@@ -55,10 +55,10 @@ document.addEventListener('keydown', function (event) {
 
 document.addEventListener("keydown", function (event) {
 	let input = event.key
-	if (input == "Shift" == true) {
+	if (input == "x" == true) {
 		isPressingShift = true;
 	}
-	if (input == "Ctrl" == true) {
+	if (input == "y" == true) {
 		isPressingCtrl = true;
 	}
 	return [isPressingShift, isPressingCtrl]
