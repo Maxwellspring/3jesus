@@ -6,8 +6,15 @@ import * as THREE from 'three';
 
 const loader = new GLTFLoader();
 
+const material2 = new THREE.LineBasicMaterial({ color: 0x964B00 });
+
 function modelLoader(modelName) {
 	loader.load(`model/${modelName}.gltf`, function (gltf) {
+		gltf.scene.traverse((child) => {
+			if (child.isMesh) {
+				child.material = material2;
+			}
+		});
 		scene.add(gltf.scene);
 	}, undefined, function (error) {
 		console.error(error);
