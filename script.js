@@ -23,28 +23,52 @@ const width = window.innerWidth, height = window.innerHeight;
 
 // init
 
-let number = 3
+let inputNumber = 3
 
-const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 10000);
-camera.position.z = 3;
+let isPressingShift = false
+let isPressingCtrl = false
+
+const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 1000);
 camera.position.x = 3;
+camera.position.y = 3;
+camera.position.z = 3;
 
-document.addEventListener('keyup', function (event) {
+
+
+
+document.addEventListener('keydown', function (event) {
 	console.log('Key up:', event.key, 'Code:', event.code);
-	number = parseInt(event.key)
-	console.log(number)
-	camera.position.z = number;
-	camera.position.x = number;
-	camera.position.y = number;
-	camera.lookAt(number, number, number)
-	return number
+	console.log(inputNumber)
+	inputNumber = Number(event.key)
+	if (inputNumber < 10 == true || inputNumber > -1 == true) {
+		if (isPressingCtrl == true) {
+			camera.position.y = inputNumber;
+		} else if (isPressingShift == true) {
+			camera.position.x = inputNumber;
+		} else {
+			camera.position.z = inputNumber;
+		}
+	}
+	camera.lookAt(0, 0, 0)
+	return inputNumber;
 });
 
-let input = 0
-
 document.addEventListener("keydown", function (event) {
-	input = event.key
-	return input
+	let input = event.key
+	if (input == "x" == true) {
+		isPressingShift = true;
+	}
+	if (input == "y" == true) {
+		isPressingCtrl = true;
+	}
+	return [isPressingShift, isPressingCtrl]
+});
+
+document.addEventListener("keyup", function (event) {
+	isPressingCtrl = false
+	isPressingShift = false
+
+	return [isPressingShift, isPressingCtrl]
 });
 
 
