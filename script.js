@@ -6,13 +6,15 @@ import * as THREE from 'three';
 
 const loader = new GLTFLoader();
 
-const material2 = new THREE.LineBasicMaterial({ color: 0x964B00 });
+const material2 = new THREE.LineBasicMaterial({ color: 0xbfbfbf });
 
-function modelLoader(modelName) {
+const material3 = new THREE.LineBasicMaterial({ color: 0x98eb7a });
+
+function modelLoader(modelName, materialName) {
 	loader.load(`model/${modelName}.gltf`, function (gltf) {
 		gltf.scene.traverse((child) => {
 			if (child.isMesh) {
-				child.material = material2;
+				child.material = materialName;
 			}
 		});
 		scene.add(gltf.scene);
@@ -23,8 +25,8 @@ function modelLoader(modelName) {
 
 
 
-modelLoader("model");
-modelLoader("TT");
+modelLoader("model", material3);
+modelLoader("TT", material2);
 
 const width = window.innerWidth, height = window.innerHeight;
 
