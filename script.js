@@ -3,11 +3,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import * as THREE from 'three';
 
-
 const loader = new GLTFLoader();
-
 const material2 = new THREE.LineBasicMaterial({ color: 0xbfbfbf });
-
 const material3 = new THREE.LineBasicMaterial({ color: 0x98eb7a });
 
 function modelLoader(modelName, materialName) {
@@ -23,19 +20,10 @@ function modelLoader(modelName, materialName) {
 	});
 };
 
-
-
 modelLoader("model", material3);
 modelLoader("TT", material2);
 
 const width = window.innerWidth, height = window.innerHeight;
-
-// init
-
-// let inputNumber = 3
-
-// let isPressingX = false
-// let isPressingY = false
 
 const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 1000);
 let CX = camera.position.x = 3;
@@ -72,53 +60,21 @@ document.addEventListener("keydown", function (event) {
 	camera.lookAt(0, 0, 0)
 })
 
+const fileInput = document.getElementById('file-input');
+fileInput.addEventListener('change', function (event) {
+	const file = event.target.files[0];
+	const url = URL.createObjectURL(file);
+	loader.load(url, function (gltf) {
+		gltf.scene.traverse((child) => {
+			if (child.isMesh) {
+				// You can add material handling here if needed
+			}
+		});
+		scene.add(gltf.scene);
+		URL.revokeObjectURL(url); // Clean up the URL
+	});
 
-// document.addEventListener('keydown', function (event) {
-// 	console.log('Key up:', event.key, 'Code:', event.code);
-// 	console.log(inputNumber)
-// 	console.log(Number(event.key))
-// 	if (Number(event.key) == NaN) {
-// 		return
-// 	} else {
-// 		inputNumber = Number(event.key)
-// 		console.log(inputNumber)
-// 		if (inputNumber < 10 == true || inputNumber > -1 == true) {
-// 			if (isPressingY == true) {
-// 				camera.position.y = inputNumber;
-// 			} else if (isPressingX == true) {
-// 				camera.position.x = inputNumber;
-// 			} else {
-// 				camera.position.z = inputNumber;
-// 			}
-// 		}
-
-// 	}
-// 	console.log("finish!")
-// 	camera.lookAt(0, 0, 0)
-// 	return inputNumber;
-// });
-
-// document.addEventListener("keydown", function (event) {
-// 	let input = event.key
-// 	if (input == "x" == true) {
-// 		isPressingX = true;
-// 	}
-// 	if (input == "y" == true) {
-// 		isPressingY = true;
-// 	}
-// 	console.log("keydown detect")
-// 	return [isPressingX, isPressingY]
-// });
-
-// document.addEventListener("keyup", function (event) {
-// 	isPressingY = false
-// 	isPressingX = false
-// 	console.log("keyup detect")
-// 	return [isPressingX, isPressingY]
-// });
-
-
-
+});
 
 const scene = new THREE.Scene();
 
@@ -137,7 +93,6 @@ scene.add(mesh);
 scene.add(myMesh);
 scene.add(back);
 
-
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height,);
 renderer.setAnimationLoop(animate);
@@ -152,9 +107,6 @@ function animate(time) {
 	mesh.rotation.z = time / 1000;
 	myMesh.position.y = -0.4
 	back.position.z = -1.2
-	//   gltf.scene.position.x = 1
 
 	renderer.render(scene, camera);
-
 }
-
