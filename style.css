@@ -1,29 +1,4 @@
 body {
     margin: 0;
-    width: 100vw;
-    height: 100vh;
-
-}
-
-#holding-box {
-	position: absolute;
-	text-align: center;
-	z-index: 100;
-	display:block;
-    background-color: rgba(29, 29, 136, 0);
-    color: rgba(255, 255, 255, 0);
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-}
-
-#version {
-    background-color: rgb(29, 29, 136);
-    color: rgb(255, 255, 255);
-    width: 20vw;
-    height: 20vh;
-    font-size: 100%;
-    font-family: arial;
+    overflow: hidden;
 }

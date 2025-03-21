@@ -1,27 +1,58 @@
-
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const loader = new GLTFLoader();
 const material2 = new THREE.LineBasicMaterial({ color: 0xbfbfbf });
 const material3 = new THREE.LineBasicMaterial({ color: 0x98eb7a });
 
+let modelMesh; // Store the loaded model's mesh
+let physicsBody; // Store the Cannon.js body
+let modelLoaded = false; // Add a flag to track model loading
+
 function modelLoader(modelName, materialName) {
-	loader.load(`model/${modelName}.gltf`, function (gltf) {
-		gltf.scene.traverse((child) => {
-			if (child.isMesh) {
-				child.material = materialName;
-			}
-		});
-		scene.add(gltf.scene);
-	}, undefined, function (error) {
-		console.error(error);
-	});
+    const modelPath = `model/${modelName}.gltf`; // Store the path
+
+    loader.load(modelPath, function (gltf) {
+        if (!gltf || !gltf.scene) { // Check if gltf and gltf.scene exist
+            console.error("Error: Invalid GLTF data for model:", modelName, "at path:", modelPath);
+            return; // Exit if there's an error
+        }
+
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                modelMesh = child;
+                child.material = materialName;
+                scene.add(child);
+
+                const geometry = child.geometry;
+                if (geometry && geometry.boundingBox) {
+                    geometry.computeBoundingBox();
+                    const max = geometry.boundingBox.max;
+                    const min = geometry.boundingBox.min;
+                    const x = (max.x - min.x) / 2;
+                    const y = (max.y - min.y) / 2;
+                    const z = (max.z - min.z) / 2;
+                    const modelShape = new window.CANNON.Box(new window.CANNON.Vec3(x, y, z));
+
+                    physicsBody = new window.CANNON.Body({ mass: 1, shape: modelShape });
+                    physicsBody.position.set(0, 0, 0); // Start at the origin
+                    physicsBody.linearDamping = 0;
+                    physicsBody.angularDamping = 0;
+                    world.addBody(physicsBody);
+
+                    console.log("Model loaded and Cannon.js body created:", modelName, "at path:", modelPath);
+                    modelLoaded = true; // Set the flag
+                } else {
+                    console.error("Error: Geometry or bounding box is invalid for model:", modelName, "at path:", modelPath);
+                }
+            }
+        });
+    }, undefined, function (error) {
+        console.error("Error loading model:", modelName, "at path:", modelPath, error);
+    });
 };
 
 modelLoader("model", material3);
-modelLoader("TT", material2);
 
 const width = window.innerWidth, height = window.innerHeight;
 
@@ -29,84 +60,74 @@ const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 1000);
 let CX = camera.position.x = 3;
 let CY = camera.position.y = 3;
 let CZ = camera.position.z = 3;
-camera.lookAt(0, 0, 0)
-
-document.addEventListener("keydown", function (event) {
-	event.preventDefault()
-	console.log(event.key)
-	let input = String(event.key)
-	switch (input) {
-		case "w":
-			CZ -= 0.1;
-			break;
-		case "s":
-			CZ += 0.1;
-			break;
-		case "a":
-			CX -= 0.1;
-			break;
-		case "d":
-			CX += 0.1;
-			break;
-		case "Control":
-			CY -= 0.1;
-			break;
-		case " ":
-			CY += 0.1;
-			break;
-
-	}
-	camera.position.set(CX, CY, CZ)
-	camera.lookAt(0, 0, 0)
-})
-
-const fileInput = document.getElementById('file-input');
-fileInput.addEventListener('change', function (event) {
-	const file = event.target.files[0];
-	const url = URL.createObjectURL(file);
-	loader.load(url, function (gltf) {
-		gltf.scene.traverse((child) => {
-			if (child.isMesh) {
-				// You can add material handling here if needed
-			}
-		});
-		scene.add(gltf.scene);
-		URL.revokeObjectURL(url); // Clean up the URL
-	});
-
-});
+camera.lookAt(0, 0, 0);
 
 const scene = new THREE.Scene();
 
-const geometry = new THREE.BoxGeometry(0.1, 0.4, 0.2);
-const floorGeometry = new THREE.BoxGeometry(1, 0.01, 1);
-const material = new THREE.LineBasicMaterial({ color: 0x964B00 });
-const boxMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
-
-const backMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF });
-const backGeometry = new THREE.BoxGeometry(10, 10, 0.01);
-
-const mesh = new THREE.Mesh(geometry, boxMaterial);
-const myMesh = new THREE.Mesh(floorGeometry, material);
-const back = new THREE.Mesh(backGeometry, backMaterial)
-scene.add(mesh);
-scene.add(myMesh);
-scene.add(back);
+// Cannon.js physics world (CREATE FIRST)
+const world = new window.CANNON.World();
+world.gravity.set(0, -9.82, 0);
+world.broadphase = new window.CANNON.NaiveBroadphase();
+world.solver.iterations = 10;
+world.solver.tolerance = 0.001;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(width, height,);
-renderer.setAnimationLoop(animate);
+renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
+
+document.addEventListener("keydown", function (event) {
+    event.preventDefault();
+    let input = String(event.key);
+    console.log("Key pressed:", input);
+
+    let forceAmount = 50;
+
+    if (modelLoaded && physicsBody) { // Check if the model is loaded and body exists
+        switch (input) {
+            case "w":
+                physicsBody.applyForce(new window.CANNON.Vec3(0, 0, -forceAmount), physicsBody.position);
+                break;
+            case "s":
+                physicsBody.applyForce(new window.CANNON.Vec3(0, 0, forceAmount), physicsBody.position);
+                break;
+            case "a":
+                physicsBody.applyForce(new window.CANNON.Vec3(-forceAmount, 0, 0), physicsBody.position);
+                break;
+            case "d":
+                physicsBody.applyForce(new window.CANNON.Vec3(forceAmount, 0, 0), physicsBody.position);
+                break;
+            case "Control":
+                physicsBody.applyForce(new window.CANNON.Vec3(0, -forceAmount, 0), physicsBody.position);
+                break;
+            case " ":
+                physicsBody.applyForce(new window.CANNON.Vec3(0, forceAmount, 0), physicsBody.position);
+                break;
+        }
+        console.log("boxBody position:", physicsBody.position.x, physicsBody.position.y, physicsBody.position.z);
+        camera.position.set(physicsBody.position.x + 3, physicsBody.position.y + 3, physicsBody.position.z + 3);
+        console.log("Camera position:", camera.position.x, camera.position.y, camera.position.z);
+        camera.lookAt(physicsBody.position);
+        console.log("Camera lookAt:", physicsBody.position.x, physicsBody.position.y, physicsBody.position.z);
+    } else {
+        console.log("Model not loaded yet, or physicsBody not defined!");
+    }
+});
 
 // animation
 
-function animate(time) {
+let timeStep = 1 / 60;
 
-	mesh.rotation.x = time / 1000;
-	mesh.rotation.y = time / 100;
-	mesh.rotation.z = time / 1000;
-	myMesh.position.y = -0.4
-	back.position.z = -1.2
+function animate() {
+    requestAnimationFrame(animate);
 
-	renderer.render(scene, camera);
+    world.step(timeStep);
+
+    if (modelLoaded && modelMesh && physicsBody) { // Check if the model is loaded
+        modelMesh.position.copy(physicsBody.position);
+        modelMesh.quaternion.copy(physicsBody.quaternion);
+    }
+
+    renderer.render(scene, camera);
 }
+
+renderer.setAnimationLoop(animate);
