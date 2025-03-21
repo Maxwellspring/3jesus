@@ -32,62 +32,90 @@ const width = window.innerWidth, height = window.innerHeight;
 
 // init
 
-let inputNumber = 3
+// let inputNumber = 3
 
-let isPressingX = false
-let isPressingY = false
+// let isPressingX = false
+// let isPressingY = false
 
 const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 1000);
-camera.position.x = 3;
-camera.position.y = 3;
-camera.position.z = 3;
-
-
-
-
-document.addEventListener('keydown', function (event) {
-	console.log('Key up:', event.key, 'Code:', event.code);
-	console.log(inputNumber)
-	console.log(Number(event.key))
-	if (Number(event.key) == NaN) {
-		return
-	} else {
-		inputNumber = Number(event.key)
-		console.log(inputNumber)
-		if (inputNumber < 10 == true || inputNumber > -1 == true) {
-			if (isPressingY == true) {
-				camera.position.y = inputNumber;
-			} else if (isPressingX == true) {
-				camera.position.x = inputNumber;
-			} else {
-				camera.position.z = inputNumber;
-			}
-		}
-
-	}
-	console.log("finish!")
-	camera.lookAt(0, 0, 0)
-	return inputNumber;
-});
+let CX = camera.position.x = 3;
+let CY = camera.position.y = 3;
+let CZ = camera.position.z = 3;
+camera.lookAt(0, 0, 0)
 
 document.addEventListener("keydown", function (event) {
-	let input = event.key
-	if (input == "x" == true) {
-		isPressingX = true;
-	}
-	if (input == "y" == true) {
-		isPressingY = true;
-	}
-	console.log("keydown detect")
-	return [isPressingX, isPressingY]
-});
+	event.preventDefault()
+	console.log(event.key)
+	let input = String(event.key)
+	switch (input) {
+		case "w":
+			CZ -= 0.1;
+			break;
+		case "s":
+			CZ += 0.1;
+			break;
+		case "a":
+			CX -= 0.1;
+			break;
+		case "d":
+			CX += 0.1;
+			break;
+		case "Control":
+			CY -= 0.1;
+			break;
+		case " ":
+			CY += 0.1;
+			break;
 
-document.addEventListener("keyup", function (event) {
-	isPressingY = false
-	isPressingX = false
-	console.log("keyup detect")
-	return [isPressingX, isPressingY]
-});
+	}
+	camera.position.set(CX, CY, CZ)
+	camera.lookAt(0, 0, 0)
+})
+
+
+// document.addEventListener('keydown', function (event) {
+// 	console.log('Key up:', event.key, 'Code:', event.code);
+// 	console.log(inputNumber)
+// 	console.log(Number(event.key))
+// 	if (Number(event.key) == NaN) {
+// 		return
+// 	} else {
+// 		inputNumber = Number(event.key)
+// 		console.log(inputNumber)
+// 		if (inputNumber < 10 == true || inputNumber > -1 == true) {
+// 			if (isPressingY == true) {
+// 				camera.position.y = inputNumber;
+// 			} else if (isPressingX == true) {
+// 				camera.position.x = inputNumber;
+// 			} else {
+// 				camera.position.z = inputNumber;
+// 			}
+// 		}
+
+// 	}
+// 	console.log("finish!")
+// 	camera.lookAt(0, 0, 0)
+// 	return inputNumber;
+// });
+
+// document.addEventListener("keydown", function (event) {
+// 	let input = event.key
+// 	if (input == "x" == true) {
+// 		isPressingX = true;
+// 	}
+// 	if (input == "y" == true) {
+// 		isPressingY = true;
+// 	}
+// 	console.log("keydown detect")
+// 	return [isPressingX, isPressingY]
+// });
+
+// document.addEventListener("keyup", function (event) {
+// 	isPressingY = false
+// 	isPressingX = false
+// 	console.log("keyup detect")
+// 	return [isPressingX, isPressingY]
+// });
 
 
 
